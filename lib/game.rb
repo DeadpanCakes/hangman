@@ -1,6 +1,7 @@
 # frozen_string_literal: false
 
 require './lib/dictionary'
+require 'json'
 
 # class to store and manage game logic
 class Game
@@ -59,7 +60,22 @@ class Game
     guess.length == 1 && !@guessed_letters.include?(guess)
   end
 
+  def to_json(*_args)
+    JSON.dump({
+                chances: @chances,
+                word: @word,
+                guessed_letters: @guessed_letters,
+                word_tracker: @word_tracker
+              })
+  end
+
   public
+
+  def save
+    puts 'What Do You Wish To Name Your File?'
+    Dir.mkdir('saves') unless Dir.exist?('saves')
+    File.open("./saves/#{gets.chomp}.json", 'w') { |file| file.write(to_json) }
+  end
 
   def start
     until @chances <= 0 || @word_tracker.join == @word
