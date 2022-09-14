@@ -11,7 +11,6 @@ class Game
     @guessed_letters = []
     @correct_letters = []
     @word_tracker = []
-    puts @word
 
     populate_tracker
   end
@@ -24,8 +23,6 @@ class Game
 
   def find_letters(letter)
     arr = @word.split('')
-    test = arr.each_index.select { |i| arr[i] == letter }
-    p letter
     arr.each_index.select { |i| arr[i] == letter }
   end
 
@@ -33,8 +30,10 @@ class Game
     if valid_guess?(letter)
       instances = find_letters(letter)
       instances.length.positive? ? correct_guess(instances, letter) : wrong_guess(letter)
+      @guessed_letters.push(letter)
     else
       puts 'Please Only Guess Single Letters'
+      puts "You Have Already Guessed #{@guessed_letters.join(', ')}"
     end
   end
 
@@ -57,15 +56,17 @@ class Game
   end
 
   def valid_guess?(guess)
-    guess.length == 1
+    guess.length == 1 && !@guessed_letters.include?(guess)
   end
 
   public
 
   def start
-    until @chances <= 0
+    until @chances <= 0 || @word_tracker.join == @word
       guess gets.chomp
       puts @word_tracker.join
     end
+    puts @word_tracker.join == @word ? "You've Won!" : "You're Out Of Guesses!"
+    puts "The Word Was #{@word}"
   end
 end
