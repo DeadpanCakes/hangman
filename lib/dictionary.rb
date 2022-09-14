@@ -7,7 +7,13 @@ class Dictionary
   def initialize
     @words = []
     File.open('dictionary.txt', 'r').each do |line|
-      @words.push line.chomp if line.chomp.length >= 5 && line.chomp.length <= 12
+      @words.push line.chomp if within_range?(line.chomp, { min: 5, max: 12 })
     end
+  end
+
+  private
+
+  def within_range?(word, range)
+    word.length >= range[:min] && word.length <= range[:max]
   end
 end
