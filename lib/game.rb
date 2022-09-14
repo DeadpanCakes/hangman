@@ -12,11 +12,16 @@ class Game
     @guessed_letters = []
     @correct_letters = []
     @word_tracker = []
+    @game_over = false
 
     populate_tracker
   end
 
   private
+
+  def game_over?
+    @game_over
+  end
 
   def populate_tracker
     @word.split('').each { @word_tracker.push('_') }
@@ -31,10 +36,19 @@ class Game
     if valid_guess?(letter)
       instances = find_letters(letter)
       instances.length.positive? ? correct_guess(instances, letter) : wrong_guess(letter)
-      @guessed_letters.push(letter)
+      end_turn(letter)
     else
       puts 'Please Only Guess Single Letters'
       puts "You Have Already Guessed #{@guessed_letters.join(', ')}"
+    end
+  end
+
+  def end_turn(letter)
+    @guessed_letters.push(letter)
+    puts @word_tracker.join
+    if @chances <= 0 || @word_tracker.join == @word
+      @game_over = true
+      end_message(@word_tracker.join == @word ? 'won' : 'lost')
     end
   end
 
@@ -75,14 +89,26 @@ class Game
     puts 'What Do You Wish To Name Your File?'
     Dir.mkdir('saves') unless Dir.exist?('saves')
     File.open("./saves/#{gets.chomp}.json", 'w') { |file| file.write(to_json) }
+    @game_over = true
+    end_message('saved')
+  end
+
+  def take_command
+    command = gets.chomp.downcase
+    if command == 'save'
+      save
+    else
+      guess command
+    end
+  end
+
+  def end_message(state)
+    puts 'Game Has Been Saved' if state == 'saved'
+    puts "You're Out Of Guesses! The Word Was #{@word}" if state == 'lost'
+    puts "You've Won! The Word Was #{@word}" if state == 'won'
   end
 
   def start
-    until @chances <= 0 || @word_tracker.join == @word
-      guess gets.chomp
-      puts @word_tracker.join
-    end
-    puts @word_tracker.join == @word ? "You've Won!" : "You're Out Of Guesses!"
-    puts "The Word Was #{@word}"
+    take_command until game_over?
   end
 end
