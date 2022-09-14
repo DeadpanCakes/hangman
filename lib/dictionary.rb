@@ -2,8 +2,6 @@
 
 # class for loading in and managing valid words
 class Dictionary
-  attr_reader :words
-
   def initialize
     @words = []
     File.open('dictionary.txt', 'r').each do |line|
@@ -15,5 +13,11 @@ class Dictionary
 
   def within_range?(word, range)
     word.length >= range[:min] && word.length <= range[:max]
+  end
+
+  public
+
+  def random_word
+    @words.sample
   end
 end
