@@ -30,8 +30,12 @@ class Game
   end
 
   def guess(letter)
-    instances = find_letters(letter)
-    instances.length.positive? ? correct_guess(instances, letter) : wrong_guess(letter)
+    if valid_guess?(letter)
+      instances = find_letters(letter)
+      instances.length.positive? ? correct_guess(instances, letter) : wrong_guess(letter)
+    else
+      puts 'Please Only Guess Single Letters'
+    end
   end
 
   def fill_letter(instances, letter)
@@ -50,6 +54,10 @@ class Game
   def wrong_guess(letter)
     decrement_chances
     puts "There is no #{letter}. #{@chances} chances left"
+  end
+
+  def valid_guess?(guess)
+    guess.length == 1
   end
 
   public
