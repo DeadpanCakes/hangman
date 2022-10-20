@@ -45,7 +45,7 @@ class Game
 
   def end_turn(letter)
     @guessed_letters.push(letter)
-    puts @word_tracker.join
+    puts @word_tracker.join(' ')
     if @chances <= 0 || @word_tracker.join == @word
       @game_over = true
       end_message(@word_tracker.join == @word ? 'won' : 'lost')
@@ -93,10 +93,25 @@ class Game
     end_message('saved')
   end
 
+  def load(filename)
+    File.open("./saves/#{filename}.json", 'r') do |file|
+      state = JSON.parse(file.read)
+      @word = state['word']
+      @word_tracker = state['word_tracker']
+      @chances = state['chances']
+      @guessed_letters = state['guessed_letters']
+    end
+    puts 'File Loaded'
+  end
+
   def take_command
+    puts 'Enter a letter to guess, or save/load to save/load'
     command = gets.chomp.downcase
     if command == 'save'
       save
+    elsif command == 'load'
+      puts 'Enter Filename'
+      load(gets.chomp)
     else
       guess command
     end
